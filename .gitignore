@@ -30,3 +30,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+pyvenv.cfg
+.DS_Store
+bin/
