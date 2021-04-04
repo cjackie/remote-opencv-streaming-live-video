@@ -4,6 +4,7 @@ import socket
 import struct
 import threading
 from io import BytesIO
+from datetime import datetime
 
 
 class Streamer(threading.Thread):
@@ -16,6 +17,8 @@ class Streamer(threading.Thread):
         self.running = False
         self.streaming = False
         self.jpeg = None
+        self.face_cascade = cv2.CascadeClassifier(
+                        'model/haarcascades/haarcascade_frontalface_default.xml')
 
     def run(self):
 
@@ -48,6 +51,7 @@ class Streamer(threading.Thread):
                     msg_size = struct.unpack("L", data)[0]
 
                     # Read the payload (the actual frame)
+                    start_time = datetime.now()                    
                     data = b''
                     while len(data) < msg_size:
                         missing_data = conn.recv(msg_size - len(data))
@@ -57,19 +61,30 @@ class Streamer(threading.Thread):
                             # Connection interrupted
                             self.streaming = False
                             break
+                    print("Took %.3f (ms) for receiving the image %d KB." % 
+                        ((datetime.now() - start_time).total_seconds() * 1000, len(data) // 1024))
 
                     # Skip building frame since streaming ended
                     if self.jpeg is not None and not self.streaming:
                         continue
 
+                    start_time = datetime.now()              
                     # Convert the byte array to a 'jpeg' format
                     memfile = BytesIO()
                     memfile.write(data)
                     memfile.seek(0)
-                    frame = numpy.load(memfile)
+                    image = numpy.load(memfile)
 
-                    ret, jpeg = cv2.imencode('.jpg', frame)
+                    # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                    faces = self.face_cascade.detectMultiScale(image, 1.3, 5)
+                    for (x, y, w, h) in faces:
+                        image = cv2.rectangle(image, (x, y), (x+w, y+h), (255, 0, 0), 2)
+
+                    ret, jpeg = cv2.imencode('.jpg', image)
                     self.jpeg = jpeg
+
+                    print("Took %.3f (ms) for processsing the image." % 
+                        ((datetime.now() - start_time).total_seconds() * 1000))
 
                     self.streaming = True
                 else:

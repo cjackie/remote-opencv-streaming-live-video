@@ -4,7 +4,7 @@ from streamer import Streamer
 app = Flask(__name__)
 
 def gen():
-  streamer = Streamer('10.0.2.15', 8080)
+  streamer = Streamer('10.0.0.220', 8080)
   streamer.start()
 
   while True:
@@ -20,4 +20,4 @@ def video_feed():
   return Response(gen(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
-  app.run(host='10.0.2.15', threaded=True)
+  app.run(host='10.0.0.220', threaded=True)
