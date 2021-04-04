@@ -90,6 +90,7 @@ class Streamer(threading.Thread):
                 else:
                     conn.close()
                     print('Closing connection...')
+                    self.running = False
                     self.streaming = False
                     self.jpeg = None
                     break
