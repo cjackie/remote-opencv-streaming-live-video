@@ -13,7 +13,7 @@ client_socket.connect(('10.0.0.220', 8080))
 
 print("connected")
 
-send_delta = 1/60
+send_delta = 1/30
 last_sent = datetime.now()
 while cap.isOpened():
     if (datetime.now() - last_sent).total_seconds() > send_delta:
@@ -25,7 +25,7 @@ while cap.isOpened():
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         memfile = BytesIO()
-        np.save(memfile, frame)
+        np.savez_compressed(memfile, frame=frame)
         memfile.seek(0)
         data = memfile.read()
 

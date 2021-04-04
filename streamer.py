@@ -73,7 +73,7 @@ class Streamer(threading.Thread):
                     memfile = BytesIO()
                     memfile.write(data)
                     memfile.seek(0)
-                    image = numpy.load(memfile)
+                    image = numpy.load(memfile)["frame"]
 
                     # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                     faces = self.face_cascade.detectMultiScale(image, 1.3, 5)
