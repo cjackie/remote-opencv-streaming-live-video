@@ -26,7 +26,9 @@ while cap.isOpened():
                         (w, h), cv2.WINDOW_NORMAL)
         windowNotSet = False
 
-    image = cv2.resize(image, (500, 300))
+    target_w = 800
+    target_h = target_w // 16 * 10
+    image = cv2.resize(image, (target_w, target_h))
     cv2.imshow("tensorflow based", image)
     k = cv2.waitKey(1) & 0xff
     if k == ord('q') or k == 27:
