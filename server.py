@@ -1,6 +1,6 @@
 from flask import Flask, render_template, Response
 from streamer import Streamer
-from udp_streamer import get_streamer as get_udp_streamer
+from udp_streamer import Streamer as UdpStreamer
 
 app = Flask(__name__)
 
@@ -26,10 +26,10 @@ def udp_gen(streamer):
 
 @app.route('/udp_video_feed')
 def udp_video_feed():
-  streamer = get_udp_streamer()
-  if streamer.streaming:
-    return Response(udp_gen(streamer), mimetype='multipart/x-mixed-replace; boundary=frame')
-  return Response("No streaming")
+  streamer = UdpStreamer("10.0.0.220", 8081)
+  generator = (b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' +  jpeg_bytes + 
+    b'\r\n\r\n'for jpeg_bytes in streamer.get())
+  return Response(generator, mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/udp_streaming')
 def udp_streaming():

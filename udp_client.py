@@ -16,8 +16,7 @@ print("connected")
 
 send_delta = 1/30
 last_sent = datetime.now()
-addr = ('10.0.0.220', 8081)
-client_socket.sendto(bytes("start", "ascii"), addr)
+addr = ('localhost', 8081)
 img_id = 1
 while cap.isOpened():
     if (datetime.now() - last_sent).total_seconds() > send_delta:
@@ -42,6 +41,7 @@ while cap.isOpened():
         img_id += 1
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
+            client_socket.sendto(bytes("end", "ascii"), addr)
             break
 
 client_socket.sendto(bytes("end", "ascii"), addr)
